@@ -1,0 +1,181 @@
+**0.**  Follow the instructions on <https://help.github.com/articles/generating-ssh-keys> to generate a new `ssh` key and add it to your `github` account.
+
+Set the values of some variables that `git` would like to use:
+
+    git config --global user.name "John Doe"
+    git config --global user.email johndoe@example.com
+
+You might want to replace the name in the above commands with your own name, and the email address with your own.
+
+**1.** Start building a new application `depot`
+and change into the newly created directory.
+The command to use is:
+
+    rails new depot
+    cd depot
+
+**1b.** Create a local `git` repository as follows:
+
+    git init
+    git add .
+    git commit -m "initial commit"
+
+**1a.**  On your `github` account, create a new repository `depot` (without `README` or other files').  The follow the instructions to `push` your new `depot` to the `github` cloud.
+
+**2.** Use scaffolding (`rails generate scaffold product title:string ...`) to create a product model with the following components.
+
+<table style="border:1pt">
+<tr>
+<th colspan=2><code>product</code></td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td><code>text</code></td>
+</tr>
+<tr>
+<td><code>image_url</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>price</code></td>
+<td><code>decimal</code></td>
+</tr>
+</table>
+
+The full command is ...
+
+**3.** Find the file `..._create_product.rb` in the
+directory `db/migrate` and change the line about the `price`
+to
+
+    t.decimal :price, :precision => 8, :scale => 2
+
+**4.** Use the command `rake db:migrate` to initialize the products
+table in the database.
+
+**5.**  Start the server as a _background_ process
+(`rails server &`), then point your browser to
+`http://localhost:3000/products` and follow the instructions to
+enter a new product.
+
+**5a.** If it all works fine, it is time to update the `git` repository.
+The command
+
+    git status
+
+will print a brief report about what has happened since the initial commit.  You can now delete unwanted back copies of files.  To commit all changes, the new files and the modified ones, you can use the commands
+
+    git add .
+    git commit -m "scaffolded products"
+
+similar to the ones used for the initial commit.  Then, to push the update to the cloud:
+
+    git push
+
+Check your `github` web pages to make sure the new version has arrived.
+
+**6.** Study the file `app/views/products/_form.html.erb`
+and change the line about the `description` text area to
+
+    <%= f.text_area :description, :rows => 6 %>
+
+Then enter a new product, and notice the changed appearance of the form.
+
+**6a.**  Again, if you are happy with the change and it all works as it should,
+update your git repositories, local and remote:
+
+    git add .
+    git commit -m "resized description field"
+    git push
+
+**7.** Complete the following table which associates controller
+methods and view templates to CRUD actions.
+
+<table>
+<tr>
+    <th>action</th><th>controller method</th><th>view template</th>
+</tr>
+<tr>
+<td><b>C</b>reate</td><td></td><td></td>
+</tr>
+<tr>
+<td><b>R</b></td><td></td><td><code>show.html.erb</code></td>
+</tr>
+<tr>
+<td><b>U</b></td><td><code>edit</code></td><td></td>
+</tr>
+<tr>
+<td><b>D</b></td><td></td><td></td> 
+</tr>
+</table>
+
+**8.** Run the test suite with the command `rake test` and
+watch out for its effects.
+
+**9.** Download the files
+
+* [db/seeds.rb](http://schmidt.nuigalway.ie/cs424/depot/db/seeds.rb)
+* [app/assets/images/logo.png](http://schmidt.nuigalway.ie/cs424/depot/app/assets/images/logo.png)
+* [app/assets/images/debug.jpg](http://schmidt.nuigalway.ie/cs424/depot/app/assets/images/debug.jpg)
+* [app/assets/images/rtp.jpg](http://schmidt.nuigalway.ie/cs424/depot/app/assets/images/rtp.jpg)
+* [app/assets/images/ruby.jpg](http://schmidt.nuigalway.ie/cs424/depot/app/assets/images/ruby.jpg)
+* [app/assets/images/wd4d.jpg](http://schmidt.nuigalway.ie/cs424/depot/app/assets/images/wd4d.jpg)
+* [app/assets/stylesheets/depot.css](http://schmidt.nuigalway.ie/cs424/depot/app/assets/stylesheets/depot.css)
+
+from <http://schmidt.nuigalway.ie/cs424/depot> and copy them into the
+corresponding directories in your depot application.
+
+**10.** Open the `db/seeds.rb` file in an editor and delete `/images/` from all the `image_url` fields in the file.  Then load these data
+into your database with the command `rake db:seed`.  (This will probably
+delete all previously entered data.)
+
+**10a.** If all went well, update the `git` repositories, local and remote.
+Can you see the new contents of the database on your `github` pages?  Why not?
+
+**11.** Replace the contents of the file `app/views/products/index.html.erb` by
+
+    <div id="product_list">
+      <h1>Listing products</h1>
+
+      <table>
+      <% @products.each do |product| %>
+        <tr class="<%= cycle('list_line_odd', 'list_line_even') %>">
+
+          <td>
+            <%= image_tag(product.image_url, :class => 'list_image') %>
+          </td>
+
+          <td class="list_description">
+            <dl>
+              <dt><%= product.title %></dt>
+              <dd><%= truncate(strip_tags(product.description),
+                     :length => 80) %></dd>
+            </dl>
+          </td>
+
+          <td class="list_actions">
+            <%= link_to 'Show', product %><br/>
+            <%= link_to 'Edit', edit_product_path(product) %><br/>
+            <%= link_to 'Destroy', product, 
+                        :confirm => 'Are you sure?',
+                        :method => :delete %>
+          </td>
+        </tr>
+      <% end %>
+      </table>
+    </div>
+
+    <br />
+
+    <%= link_to 'New product', new_product_path %>
+
+Then reload the products index page in your browser and notice the difference.
+
+**11a.**  And again, one last time, if you are happy with the changes,
+update the `git` repositories.
+
+**12.**  Formulate at least 5 questions about this code and submit them as comments to this article.
