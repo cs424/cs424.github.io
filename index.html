@@ -3,7 +3,7 @@ layout: default
 ---
 
 <div class="posts">
-  {% for post in site.posts %}
+  {% for post in site.posts | reverse %}
     <p class="entry">
       {{ post.date | date: "%d/%m/%y" }}. <b><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></b>
     </p>
