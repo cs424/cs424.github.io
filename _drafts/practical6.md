@@ -2,7 +2,7 @@
 layout: post
 title:  Practical 6
 author: CS424
-date:   2015-11-05 11:00:00
+date:   2015-11-04 11:00:00
 categories: practical
 ---
 **0.** Finish Practical Sheet 5.
@@ -10,7 +10,7 @@ categories: practical
 (Alternatively, 
 move your old depot application out of the way
 and get a fresh copy 
-by first creating a fork of <https://github.com/gpfeiffer/depot.git>
+by first creating a fork of <https://github.com/cs424/depot.git>
 on your `github` page, and secondly cloning the fork into your
 working directory.
 Then `cd depot` and run `rake db:migrate` and `rake db:seed` to set up the database.)
@@ -46,18 +46,19 @@ chunk in the cart view by the single line:
 {% highlight html+ruby %}
 <%= render @cart.line_items %>
 {% endhighlight %}
-Reload the page and make sure it still works as desired.  If it works, the
+Reload the page and make sure it still works as desired.
+(Note the `=` sign in the opening ERB bracket `<%=`.)  If it works, the
 `render` method has correctly identified the thing to render as a list of line items, has found the instructions for rendering a single line item in the
 `line_item` partial in the `line_items` view folder and has applied this
 to each item in the list.
 Note how a series of naming conventions makes it possible to remove
-one level of complexity from the program.
+an entire level of complexity from the program.
 
 **3.** Next, 
 we are going to wrap up the shopping cart display into a partial,
 so that we can easily include it in the side bar of the catalog page.
 
-Following the sam naming conventions as before, 
+Following the same naming conventions as before, 
 create a new file for a partial `cart`
 (which name? which folder?).
 Then copy the contents of the cart view
@@ -72,7 +73,11 @@ in the original cart view file by the single line:
 {% highlight html+ruby %}
 <%= render @cart %>
 {% endhighlight %}
-Check whether it still works as desired.  Actually, what do the tests report?
+Check whether it still works as desired.  
+
+**3a.** Actually, what do the tests report?  If there are errors, 
+what's needed to fix them?  If not,
+this might be a good time to commit the recent changes.
 
 **4.**  You are now in a position to display a cart wherever you want,
 with a single command.
@@ -89,19 +94,14 @@ in the view.
 **5.**
 The partial can now be invoked by the text
 {% highlight html+ruby %}
-<div id="cart">
-  <%= render @cart %>
-</div>
+<% if @cart %>
+  <div id="cart">
+    <%= render @cart %>
+  </div>
+<% end %>
 {% endhighlight %}
 inside the `<div>` with ID `side` of the layout
 (which file?).  Try it out!
-
-**5a.** If all works fine, commit the changes to your local `git`
-repository, and push them to the `github` cloud.
-
-    git add .
-    git commit -m "moved cart into a partial."
-    git push
 
 **6.** We need to modify the styling rules for carts so that
 they not only apply to pages created by the carts controller.
@@ -114,22 +114,22 @@ by the sequence
 **7.** In the `application.css.scss` style file, add
 {% highlight scss %}
 form, div {
-	display: inline;
+  display: inline;
 }
 
 input {
-	font-size: small;
+  font-size: small;
 }
 
 #cart {
-	font-size: smaller;
-	color: white;
+  font-size: smaller;
+  color: white;
 
-	table {
-	    border-top: 1px dotted #595;
-	    border-bottom: 1px dotted #595;
-	    margin-bottom: 10px;
-	}
+  table {
+    border-top: 1px dotted #595;
+    border-bottom: 1px dotted #595;
+    margin-bottom: 10px;
+  }
 }
 {% endhighlight %}
 to the `#side` bracket, before the `ul` bracket.
@@ -140,9 +140,21 @@ of the line items controller to
 {% highlight ruby %}
 format.html { redirect_to store_url }
 {% endhighlight %}
+Run the tests again and see what fails.  The page flow has changed and
+that needs to be reflected in the tests.
+Chnage the appropriate line in the line items controller test (which file?)
+to
+{% highlight ruby %}
+assert_redirected_to store_path
+{% endhighlight %}
 
-**8a.** If all works fine, commit the changes to your local `git`
+**8a.** What do the tests say now? 
+If all works fine, commit the changes to your local `git`
 repository, and push them to the `github` cloud.
+
+    git add .
+    git commit -m "moved cart into a partial."
+    git push
 
 **9. Ajax.** 
 If only the contents of the cart has changed then
@@ -161,9 +173,10 @@ This is done by adding the option `remote: true` to the button (which file?):
 {% endhighlight %}
 
 **10.** 
-On the receiving end, allow
+On the receiving end, we need to allow
 the `create` method of the line items
-controller to respond to Ajax requests
+controller to respond to Ajax requests.
+This is done
 by adding one line
 {% highlight ruby %}
 format.js
@@ -210,14 +223,15 @@ format.js { @current_item = @line_item }
 {% endhighlight %}
 Then, in the `line_item` partial, replace the opening `<tr>` by:
 {% highlight html+ruby %}
-<% if line_item -- @current_item %>
+<% if line_item == @current_item %>
 <tr id="current_item">
 <% else %>
 <tr>
 <% end %>
 {% endhighlight %}
-I don't like this code (why?) but it marks the latest item with a unique ID,
-that javascript can use to modify the corresponding part of the DOM.
+I don't particularly like this code. (Why? Because there must be a cleaner way to achieve this with the `content_tag` helper.  If you find one, there is a comment box below ...) It marks the latest
+item with a unique ID, and javascript can use this ID to modify the
+corresponding part of the DOM.
 Add
 {% highlight javascript %}
 $('#current_item').css({'background-color':'#88ff88'}).
@@ -225,7 +239,7 @@ $('#current_item').css({'background-color':'#88ff88'}).
 {% endhighlight %}
 to the `create.js.erb` template in the line items view folder.
 
-Add a new item a watch Yellow Fade in action.
+Add a new item a watch Yellow Fade in action. (It might be necessary to restart the server.)
 
 **14. Empty Carts.** If the cart is empty, there is no need to display it.
 One way to achieve this is to set 'display: none' in the CSS style
@@ -253,7 +267,7 @@ The `jquery` library has various effects built in. In order to
 gradually display a newly created cart, add the following line to the
 top of the `create.js.erb` template in the line items view folder:
 {% highlight javascript %}
-if ($('#cart tr').length == 1) { $('#cart').show('blind', 1000); }
+if ($('#cart tr').length == 2) { $('#cart').show('blind', 1000); }
 {% endhighlight %}
 
 **15.** Remove the message about currently empty carts (from where?).
@@ -262,27 +276,8 @@ It is no longer needed, and it no longer works correctly.
 **15a.** If all works fine, commit the changes to your local `git`
 repository, and push them to the `github` cloud.
 
-**16. Testing AJAX.** If you run the tests now (try it: `rake test`),
-they'll fail badly.  For two reasons: we did not design the latest improvements
-with the tests in mind, and we did not reflect some modifications
-in the tests.  To adjust this, replace the
-`<%= hidden_div_if ... %>` in the layout by
-{% highlight html+ruby %}
-<% if @cart %>
-  <%= hidden_div_if(@cart.line_items.empty?, id: 'cart') do %>
-    <%= render @cart %>
-  <% end %>
-<% end %>
-{% endhighlight %}
-and then run the test again.
-
-**17.**  The only test that still fails is about a page redirect.  In the
-line items controller test, change the corresponding line to
-{% highlight ruby %}
-assert_redirected_to store_path
-{% endhighlight %}
-
-**18.** To test the AJAX functionality, add the following test to the line items controller test.
+**16. Testing AJAX.** 
+To test the AJAX functionality, add the following test to the line items controller test.
 {% highlight ruby %}
 test "should create line item via ajax" do
   assert_difference('LineItem.count') do
@@ -291,6 +286,7 @@ test "should create line item via ajax" do
   assert_response :success
 end
 {% endhighlight %}
+Now run the tests.
 
 **18a.** If all works fine, commit the changes to your local `git`
 repository, and push them to the `github` cloud.
