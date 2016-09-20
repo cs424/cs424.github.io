@@ -76,3 +76,13 @@ exclude:
     - Gemfile.lock
     - LICENSE
     - README.md
+
+# Default values
+defaults:
+  -
+    scope:
+      path: ""
+      type: posts
+    values:
+      author: CS424
+      layout: post
