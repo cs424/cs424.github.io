@@ -4,12 +4,10 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+### CS424 Practicals
 
-### More Information
+There'll be one per week.
 
-A place to include any other types of information that you'd like to include about yourself. 
+### Contact us
 
-### Contact me
-
-[email@domain.com](mailto:email@domain.com)
+[cs424.nuig@gmail.com](mailto:cs424.nuig@gmail.com)
